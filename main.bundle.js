@@ -47,7 +47,7 @@
 	// This is the base url
 	// make requests with `herokuUrl + "api/v1/foods"` etc
 	const herokuUrl = __webpack_require__(1);
-	__webpack_require__(2).getFoods;
+	const food = __webpack_require__(2);
 
 /***/ }),
 /* 1 */
@@ -68,24 +68,41 @@
 	const $ = __webpack_require__(3);
 
 	function getFoods() {
+	  counter = 1;
 	  $.ajax({
 	    type: "GET",
 	    url: herokuUrl() + "api/v1/foods",
 	    success: function (posts) {
 	      posts.forEach(function (foodType) {
 	        event.preventDefault;
-	        let button = "<td><button type='button' class='deleteButton'>Delete</button></td>";
+	        let button = `<td><button type='button' class='deleteButton' id='${counter}'>Delete</button></td>`;
 	        let toInsert = `<tr><td>${foodType.name}</td><td>${foodType.calories}</td>${button}</tr>$`;
 	        $(".foodsTable").append(toInsert);
+	        counter += 1;
 	      });
 	    }
 	  });
 	}
 
+	function deleteFoods() {
+	  $('.deleteButton').on('click', function () {
+	    console.log('delete button pressed');
+	    debugger;
+	    let id = event.target;
+
+	    $.ajax({
+	      type: 'DELETE',
+	      url: herokuUlr() + `api/v1/foods/#{.id}`
+	    });
+	  });
+	};
+
 	getFoods();
+	deleteFoods();
 
 	module.exports = function () {
 	  getFoods: getFoods;
+	  deleteFoods: deleteFoods;
 	};
 
 /***/ }),
