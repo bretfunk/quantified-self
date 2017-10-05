@@ -42,9 +42,42 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// This is the base url
+	// make requests with `herokuUrl + "api/v1/foods"` etc
+	const herokuUrl = __webpack_require__(1);
+	var newAlert = __webpack_require__(2);
+	console.log(newAlert);
+	let fullUrl = herokuUrl() + "test";
+	console.log(fullUrl);
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
-	
+	//function herokuUrl() {
+	//return "https://arcane-depths-57821.herokuapp.com/";
+	//};
+
+	module.exports = function () {
+	  return "https://arcane-depths-57821.herokuapp.com/";
+	};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// This is the base url, last character is a "/" so don't include as first character
+	// of specific herokuUrl api request enpoint
+	// make requests with `herokuUrl + "api/v1/foods"` etc
+	const herokuUrl = __webpack_require__(1).herokuUrl;
+	//debugger;
+
+	module.exports = function () {
+	  //alert('it works!');
+	  return "it works";
+	};
 
 /***/ })
 /******/ ]);
