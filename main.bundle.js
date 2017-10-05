@@ -64,15 +64,20 @@
 	// This is the base url, last character is a "/" so don't include as first character
 	// of specific herokuUrl api request enpoint
 	// make requests with `herokuUrl + "api/v1/foods"` etc
-	const herokuUrl = __webpack_require__(1).herokuUrl;
+	const herokuUrl = __webpack_require__(1);
 	const $ = __webpack_require__(3);
 
 	function getFoods() {
 	  $.ajax({
 	    type: "GET",
 	    url: herokuUrl() + "api/v1/foods",
-	    success: function () {
-	      return "it works";
+	    success: function (posts) {
+	      posts.forEach(function (foodType) {
+	        event.preventDefault;
+	        let button = "<td><button type='button' class='deleteButton'>Delete</button></td>";
+	        let toInsert = `<tr><td>${foodType.name}</td><td>${foodType.calories}</td>${button}</tr>$`;
+	        $(".foodsTable").append(toInsert);
+	      });
 	    }
 	  });
 	}
