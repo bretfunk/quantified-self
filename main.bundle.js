@@ -54,7 +54,8 @@
 /***/ (function(module, exports) {
 
 	module.exports = function () {
-	  return "https://arcane-depths-57821.herokuapp.com/";
+	  //return "https://arcane-depths-57821.herokuapp.com/";
+	  return "http://localhost:3000/";
 	};
 
 /***/ }),
@@ -68,41 +69,39 @@
 	const $ = __webpack_require__(3);
 
 	function getFoods() {
-	  counter = 1;
+	  //counter = 1;
 	  $.ajax({
 	    type: "GET",
 	    url: herokuUrl() + "api/v1/foods",
 	    success: function (posts) {
 	      posts.forEach(function (foodType) {
 	        event.preventDefault;
-	        let button = `<td><button type='button' class='deleteButton' id='${counter}'>Delete</button></td>`;
-	        let toInsert = `<tr><td>${foodType.name}</td><td>${foodType.calories}</td>${button}</tr>$`;
+	        let button = `<td><button type='button' class='deleteButton' id='${foodType.id}'>Delete</button></td>`;
+	        let toInsert = `<tr id=${foodType.id}><td>${foodType.name}</td><td>${foodType.calories}</td>${button}</tr>`;
 	        $(".foodsTable").append(toInsert);
-	        counter += 1;
 	      });
+	      deleteFoodListener();
 	    }
 	  });
 	}
 
-	function deleteFoods() {
+	function deleteFoodListener() {
 	  $('.deleteButton').on('click', function () {
 	    console.log('delete button pressed');
-	    debugger;
-	    let id = event.target;
+	    //debugger;
 
 	    $.ajax({
 	      type: 'DELETE',
-	      url: herokuUlr() + `api/v1/foods/#{.id}`
+	      url: herokuUrl() + `api/v1/foods/${event.target.id}`,
+	      success: $(`#${event.target.id}`).hide()
 	    });
 	  });
 	};
 
 	getFoods();
-	deleteFoods();
 
 	module.exports = function () {
 	  getFoods: getFoods;
-	  deleteFoods: deleteFoods;
 	};
 
 /***/ }),
