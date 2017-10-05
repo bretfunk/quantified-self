@@ -68,19 +68,32 @@
 	const $ = __webpack_require__(3);
 
 	function getFoods() {
+	  counter = 1;
 	  $.ajax({
 	    type: "GET",
 	    url: herokuUrl() + "api/v1/foods",
 	    success: function (posts) {
 	      posts.forEach(function (foodType) {
 	        event.preventDefault;
-	        let button = "<td><button type='button' class='deleteButton'>Delete</button></td>";
+	        let button = "<td><button type='button' class='deleteButton' id=`${counter}`>Delete</button></td>";
 	        let toInsert = `<tr><td>${foodType.name}</td><td>${foodType.calories}</td>${button}</tr>$`;
 	        $(".foodsTable").append(toInsert);
+	        counter += 1;
 	      });
 	    }
 	  });
 	}
+
+	$('.deleteButton').on('click', function () {
+	  let id = event.target;
+	  console.log('delete button pressed');
+	  debugger;
+
+	  $.ajax({
+	    type: 'DELETE',
+	    url: herokuUlr() + `api/v1/foods/#{.id}`
+	  });
+	});
 
 	getFoods();
 
