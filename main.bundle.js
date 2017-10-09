@@ -54,7 +54,7 @@
 /***/ (function(module, exports) {
 
 	module.exports = function () {
-	  //return "https://arcane-depths-57821.herokuapp.com/";
+	  // return "https://arcane-depths-57821.herokuapp.com/";
 	  return "http://localhost:3000/";
 	};
 
@@ -68,35 +68,150 @@
 	const herokuUrl = __webpack_require__(1);
 	const $ = __webpack_require__(3);
 
+	$('#newFoodForm').hide();
+
 	function getFoods() {
-	  //counter = 1;
 	  $.ajax({
 	    type: "GET",
-	    url: herokuUrl() + "api/v1/foods",
+	    url: `${herokuUrl()}api/v1/foods`,
 	    success: function (posts) {
-	      posts.forEach(function (foodType) {
-	        event.preventDefault;
-	        let button = `<td><button type='button' class='deleteButton' id='${foodType.id}'>Delete</button></td>`;
-	        let toInsert = `<tr id=${foodType.id}><td>${foodType.name}</td><td>${foodType.calories}</td>${button}</tr>`;
-	        $(".foodsTable").append(toInsert);
-	      });
-	      deleteFoodListener();
+	      launchPage(posts);
 	    }
 	  });
 	}
 
+	function launchPage(posts) {
+	  fillTable(posts);
+	  deleteFoodListener();
+	  editFoodListener();
+	  foodFilterListenter();
+	  createFoodButtonListener();
+	}
+
 	function deleteFoodListener() {
 	  $('.deleteButton').on('click', function () {
-	    console.log('delete button pressed');
-	    //debugger;
-
 	    $.ajax({
 	      type: 'DELETE',
 	      url: herokuUrl() + `api/v1/foods/${event.target.id}`,
 	      success: $(`#${event.target.id}`).hide()
 	    });
 	  });
-	};
+	}
+
+	function editFoodListener() {
+	  $('.foodsTable').on('keydown', '.food', function (event) {
+	    const foodRow = $(this).parent();
+	    const foodId = foodRow.attr("id");
+	    const attrName = $(this).attr("name");
+	    const data = { [attrName]: $(this).text() };
+
+	    if (event.keyCode === 13) {
+	      ajaxPatchRequest(data, foodId);
+	      return false;
+	    }
+	  });
+	}
+
+	function ajaxPatchRequest(data, foodId) {
+	  $.ajax({
+	    type: 'PATCH',
+	    url: `${herokuUrl()}api/v1/foods/${foodId}`,
+	    data: data,
+	    success: function () {
+	      alert("Successful");
+	    },
+	    error: function () {
+	      alert("Nope");
+	    }
+	  });
+	}
+
+	function foodFilterListenter() {
+	  $(`.food-filter`).on('keydown', function (event) {
+	    let searchValue = $('.search-value').val().toLowerCase();
+	    $.ajax({
+	      type: 'GET',
+	      url: `${herokuUrl()}api/v1/foods`,
+	      success: function (posts) {
+	        appendFood(posts, searchValue);
+	      }
+	    });
+	  });
+	}
+
+	function appendFood(foods, searchValue) {
+	  let foodObjects = foods.filter(function (food) {
+	    return food.name.toLowerCase().includes(searchValue);
+	  });
+
+	  $('.food').remove();
+	  $('.deleteButton').hide();
+
+	  fillTable(foodObjects);
+	}
+
+	function fillTable(foods) {
+	  foods.reverse().forEach(function (foodType) {
+	    event.preventDefault;
+	    let button = `<td><button type='button' class='deleteButton' id='${foodType.id}'>Delete</button></td>`;
+	    let insertName = `<tr id=${foodType.id}><td class="food" name="name" contentEditable>${foodType.name}</td>`;
+	    let insertCals = `<td class="food" name="calories" contentEditable>${foodType.calories}`;
+	    let insertRow = `${insertName}${insertCals}</td>${button}</tr>`;
+	    $(".foodsTable").append(insertRow);
+	  });
+	}
+
+	function createFoodButtonListener() {
+	  $('#createButton').on('click', function () {
+	    $('#newFoodForm').show();
+	    createFoodFormListener();
+	  });
+	}
+
+	function createFoodFormListener() {
+	  $('#createFoodForm').on('submit', function (event) {
+	    event.preventDefault();
+
+	    let food = $(event.currentTarget.name).val();
+	    let calories = $(event.currentTarget.calories).val();
+
+	    errorCheck(food, calories);
+
+	    let data = $.post(herokuUrl() + `api/v1/foods?name=${food}&calories=${calories}"`).then(function (data) {
+	      let button = `<td><button type='button' class='deleteButton' id='${data.id}'>Delete</button></td>`;
+	      let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
+	      $(".foodsTable").prepend(toInsert);
+	      $('#createFoodForm')[0].reset();
+	    });
+	  });
+	}
+
+	function errorCheck(food, calories) {
+	  //let words = [food, calories]
+	  //let toSay = {
+	  //food: "food name",
+	  //calories: "calorie amount"
+	  //}
+
+	  //words.forEach(function(input, index) {
+	  //let word = ["food", "calories"]
+	  //if (!`${input}`) {
+	  //$(`${word[index]}-error`).remove()
+	  //throw new Error ($(`#${word[index]}Field`).append(`<p id=``${word[index]}-error``>Please enter a ${toSay[word[index]]} </p>`))
+	  //}
+	  //})
+	  //}
+
+	  if (!food) {
+	    $('#name-error').remove();
+	    throw new Error($('#nameField').append("<p id='name-error'>Please enter a food name</p>"));
+	  }
+
+	  if (!calories || calories < 1) {
+	    $('#calorie-error').remove();
+	    throw new Error($('#calorieField').append("<p id='calorie-error'>Please enter a calorie amount</p>"));
+	  }
+	}
 
 	getFoods();
 
