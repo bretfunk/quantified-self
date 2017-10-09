@@ -6,12 +6,28 @@
 </head>
 <body>
   <h1>Foods</h1>
-  <table style="width:100%" class="foodsTable" id="foodsTable">
+  <table style="width:100%">
     <tr>
       <th>Food Name</th>
       <th>Calories</th>
     </tr>
+    <tbody class="foodsTable" id="foodsTable">
+    </tbody>
   </table>
+  <button type='button' id='createButton'>Add New Food</button>
+  <br>
+  <div id="newFoodForm">
+  <form id = "createFoodForm">
+    Food:<br>
+    <input type="text" name="name"><br>
+    <div id="nameField"></div>
+    Calories:<br>
+    <input type="text" name="calories" ><br>
+    <div id="calorieField"></div>
+    <input id="submitButton" type="submit" value="Submit">
+  </form>
+  </div>
+
 
   <script src="main.bundle.js"></script>
 </body>
