@@ -1,19 +1,95 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Quantified Self - Diary</title>
-</head>
-<body>
-  <table style="width:100%" class="foodsTable" id="foodsTable">
-    <tr>
-      <th>Food Name</th>
-      <th>Calories</th>
-    </tr>
-  </table>
-  <a href="https://bretfunk.github.io/quantified-self/food.html">View Foods</a>
-  <a href="https://bretfunk.github.io/quantified-self/food.html">View Meals</a>
-<h1>Index</h1>
-  <script src="main.bundle.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <title>Quantified Self - Diary</title>
+  </head>
+  <body>
+    <style>
+.darkBackground {
+  background-color: lightgrey
+}
+    </style>
+    <table style="width:100%">
+      <tr>
+        <td>
+          <h2>Breakfast</h2>
+          <table style="width:50%">
+            <tr class="darkBackground">
+              <th>Name</th>
+              <th>Calories</th>
+            </tr>
+            <tbody class="Breakfast">
+            </tbody>
+          </table>
+        </td>
+
+        <td>
+          <h2>Lunch</h2>
+          <table style="width:50%">
+            <tr class="darkBackground">
+              <th>Name</th>
+              <th>Calories</th>
+            </tr>
+            <tbody class="Lunch">
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h2>Dinner</h2>
+          <table style="width:50%">
+            <tr class="darkBackground">
+              <th>Name</th>
+              <th>Calories</th>
+            </tr>
+            <tbody class="Dinner">
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <h2>Snack</h2>
+          <table style="width:50%">
+            <tr class="darkBackground">
+              <th>Name</th>
+              <th>Calories</th>
+            </tr>
+            <tbody class="Snack" class="darkBackground">
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td><h2>Foods</h2>
+          <div id="newMealFoodForm">
+            <form id = "createMealFoodForm">
+              Food:<br>
+              <input type="text" name="name"><br>
+              <div id="nameField"></div>
+              Calories:<br>
+              <input type="text" name="calories" ><br>
+              <div id="calorieField"></div>
+              <input id="submitButton" type="submit" value="Submit">
+            </form>
+          </div>
+          <table style="width:50%">
+            <tr class="darkBackground">
+              <th>Food</th>
+              <th>Calories</th>
+            </tr>
+            <tbody>
+            </tbody>
+          </table>
+
+        </td>
+        <td><h2>Total</h2>
+          <table class="darkBackground totals" style="width:50%">
+
+          </table>
+        </td>
+      </tr>
+    </table>
+    <script src="main.bundle.js"></script>
+  </body>
 </html>
