@@ -47,7 +47,66 @@
 	// This is the base url
 	// make requests with `herokuUrl + "api/v1/foods"` etc
 	const herokuUrl = __webpack_require__(1);
-	const food = __webpack_require__(2);
+	const $ = __webpack_require__(2);
+	const food = __webpack_require__(3);
+
+	//$('.newMealFoodForm').hide()
+
+	function getMeals() {
+	  $.get(`${herokuUrl()}/api/v1/meals`).then(function (meals) {
+	    let totals = {};
+	    let remainingCalories = {
+	      Breakfast: 400,
+	      Lunch: 600,
+	      Dinner: 800,
+	      Snack: 200
+	      //foods is nested under meals so there is a forEach inside a forEach to get the foods and calories
+	    };meals.forEach(function (meal) {
+	      meal.foods.reverse().forEach(function (food) {
+	        //let deleteButton = `<button type="button" value="Delete" class="deleteButton">Delete</button>`
+	        let deleteButton = `<img src="http://www.drodd.com/images14/x19.jpg" style="width:15px" value="Delete" class="deleteButton"></img>`;
+	        $(`.${meal.name}`).prepend(`<tr><td>${food.name}</td><td>${food.calories}</td><td>${deleteButton}</td></tr>`);
+	        totals[meal.name] = totals[meal.name] || 0;
+	        totals[meal.name] += food.calories;
+	      });
+	    });
+	    //add total calories and calories remaining to each table
+	    Object.keys(totals).forEach(function (key) {
+	      let calorieNumber = remainingCalories[key] - totals[key];
+	      //calorieColor(calorieNumber)
+
+	      //add the calories in red if negative
+	      $(`.${key}`).append(`<tr class='darkBackground'><td>Total Calories</td><td>${totals[key]}</td></tr>`);
+	      $(`.${key}`).append(`<tr class='darkBackground'><td>Remaining Calories</td><td style="color:${calorieColor(calorieNumber)}">${calorieNumber}</td></tr>`);
+	    });
+	    getTotals(remainingCalories, totals);
+	  });
+	}
+
+	function getTotals(goal, used) {
+	  let goalCalories = sum(goal);
+	  let caloriesConsumed = sum(used);
+	  let remainingCalories = goalCalories - caloriesConsumed;
+	  $('.totals').append(`<tr><td>Goal Calories</td><td>${goalCalories}</td></tr>`);
+	  $('.totals').append(`<tr><td>Calories Consumed</td><td>${caloriesConsumed}</td></tr>`);
+	  $('.totals').append(`<tr><td>Remaining Calories</td><td style="color:${calorieColor(remainingCalories)}">${remainingCalories}</td></tr>`);
+	}
+
+	function sum(obj) {
+	  return Object.keys(obj).reduce(function (sum, key) {
+	    return sum + parseFloat(obj[key]);
+	  }, 0);
+	}
+
+	function calorieColor(number) {
+	  if (number < 0) {
+	    return 'red';
+	  } else {
+	    return 'green';
+	  }
+	}
+
+	getMeals();
 
 /***/ }),
 /* 1 */
@@ -60,167 +119,6 @@
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// This is the base url, last character is a "/" so don't include as first character
-	// of specific herokuUrl api request enpoint
-	// make requests with `herokuUrl + "api/v1/foods"` etc
-	const herokuUrl = __webpack_require__(1);
-	const $ = __webpack_require__(3);
-
-	$('#newFoodForm').hide();
-
-	function getFoods() {
-	  $.ajax({
-	    type: "GET",
-	    url: `${herokuUrl()}api/v1/foods`,
-	    success: function (posts) {
-	      launchPage(posts);
-	    }
-	  });
-	}
-
-	function launchPage(posts) {
-	  fillTable(posts);
-	  deleteFoodListener();
-	  editFoodListener();
-	  foodFilterListenter();
-	  createFoodButtonListener();
-	}
-
-	function deleteFoodListener() {
-	  $('.deleteButton').on('click', function () {
-	    $.ajax({
-	      type: 'DELETE',
-	      url: herokuUrl() + `api/v1/foods/${event.target.id}`,
-	      success: $(`#${event.target.id}`).hide()
-	    });
-	  });
-	}
-
-	function editFoodListener() {
-	  $('.foodsTable').on('keydown', '.food', function (event) {
-	    const foodRow = $(this).parent();
-	    const foodId = foodRow.attr("id");
-	    const attrName = $(this).attr("name");
-	    const data = { [attrName]: $(this).text() };
-
-	    if (event.keyCode === 13) {
-	      ajaxPatchRequest(data, foodId);
-	      return false;
-	    }
-	  });
-	}
-
-	function ajaxPatchRequest(data, foodId) {
-	  $.ajax({
-	    type: 'PATCH',
-	    url: `${herokuUrl()}api/v1/foods/${foodId}`,
-	    data: data,
-	    success: function () {
-	      alert("Successful");
-	    },
-	    error: function () {
-	      alert("Nope");
-	    }
-	  });
-	}
-
-	function foodFilterListenter() {
-	  $(`.food-filter`).on('keydown', function (event) {
-	    let searchValue = $('.search-value').val().toLowerCase();
-	    $.ajax({
-	      type: 'GET',
-	      url: `${herokuUrl()}api/v1/foods`,
-	      success: function (posts) {
-	        appendFood(posts, searchValue);
-	      }
-	    });
-	  });
-	}
-
-	function appendFood(foods, searchValue) {
-	  let foodObjects = foods.filter(function (food) {
-	    return food.name.toLowerCase().includes(searchValue);
-	  });
-
-	  $('.food').remove();
-	  $('.deleteButton').hide();
-
-	  fillTable(foodObjects);
-	}
-
-	function fillTable(foods) {
-	  foods.reverse().forEach(function (foodType) {
-	    event.preventDefault;
-	    let button = `<td><button type='button' class='deleteButton' id='${foodType.id}'>Delete</button></td>`;
-	    let insertName = `<tr id=${foodType.id}><td class="food" name="name" contentEditable>${foodType.name}</td>`;
-	    let insertCals = `<td class="food" name="calories" contentEditable>${foodType.calories}`;
-	    let insertRow = `${insertName}${insertCals}</td>${button}</tr>`;
-	    $(".foodsTable").append(insertRow);
-	  });
-	}
-
-	function createFoodButtonListener() {
-	  $('#createButton').on('click', function () {
-	    $('#newFoodForm').show();
-	    createFoodFormListener();
-	  });
-	}
-
-	function createFoodFormListener() {
-	  $('#createFoodForm').on('submit', function (event) {
-	    event.preventDefault();
-
-	    let food = $(event.currentTarget.name).val();
-	    let calories = $(event.currentTarget.calories).val();
-
-	    errorCheck(food, calories);
-
-	    let data = $.post(herokuUrl() + `api/v1/foods?name=${food}&calories=${calories}"`).then(function (data) {
-	      let button = `<td><button type='button' class='deleteButton' id='${data.id}'>Delete</button></td>`;
-	      let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
-	      $(".foodsTable").prepend(toInsert);
-	      $('#createFoodForm')[0].reset();
-	    });
-	  });
-	}
-
-	function errorCheck(food, calories) {
-	  //let words = [food, calories]
-	  //let toSay = {
-	  //food: "food name",
-	  //calories: "calorie amount"
-	  //}
-
-	  //words.forEach(function(input, index) {
-	  //let word = ["food", "calories"]
-	  //if (!`${input}`) {
-	  //$(`${word[index]}-error`).remove()
-	  //throw new Error ($(`#${word[index]}Field`).append(`<p id=``${word[index]}-error``>Please enter a ${toSay[word[index]]} </p>`))
-	  //}
-	  //})
-	  //}
-
-	  if (!food) {
-	    $('#name-error').remove();
-	    throw new Error($('#nameField').append("<p id='name-error'>Please enter a food name</p>"));
-	  }
-
-	  if (!calories || calories < 1) {
-	    $('#calorie-error').remove();
-	    throw new Error($('#calorieField').append("<p id='calorie-error'>Please enter a calorie amount</p>"));
-	  }
-	}
-
-	getFoods();
-
-	module.exports = function () {
-	  getFoods: getFoods;
-	};
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10477,6 +10375,238 @@
 	return jQuery;
 	} );
 
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// This is the base url, last character is a "/" so don't include as first character
+	// of specific herokuUrl api request enpoint
+	// make requests with `herokuUrl + "api/v1/foods"` etc
+	const DefaultLoader = __webpack_require__(4);
+	const $ = __webpack_require__(2);
+
+	class Food {
+	  constructor() {
+	    this.loadPage = function () {
+	      $(document).ready(function () {
+	        const loadPage = new DefaultLoader();
+	        loadPage.getFoods(loadPage);
+	      });
+	    };
+	  }
+	}
+
+	const food = new Food();
+	food.loadPage();
+
+	module.exports = Food;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	const herokuUrl = __webpack_require__(1);
+	const CruddyFood = __webpack_require__(5);
+	const HtmlEvents = __webpack_require__(6);
+	const Filter = __webpack_require__(7);
+	const $ = __webpack_require__(2);
+
+	class DefaultLoader {
+	  constructor() {
+	    this.crudFood = new CruddyFood();
+	    this.html = new HtmlEvents();
+	    this.filter = new Filter();
+	  }
+
+	  getFoods(thisPage) {
+	    $('#newFoodForm').hide();
+	    $.ajax({
+	      type: "GET",
+	      url: `${herokuUrl()}api/v1/foods`,
+	      success: function (posts) {
+	        thisPage.launchPage(posts, "foods");
+	      }
+	    });
+	  }
+
+	  launchPage(posts, tableType) {
+	    this.html.fillTable(posts);
+	    this.filter.startListener(tableType, this.filter);
+	    this.crudFood.startListener();
+	  }
+	}
+
+	module.exports = DefaultLoader;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	const $ = __webpack_require__(2);
+	const herokuUrl = __webpack_require__(1);
+
+	class CruddyFood {
+	  constructor() {
+	    this.startListener = function () {
+	      this.deleteFoodListener();
+	      this.editFoodListener(this);
+	      this.createFoodButtonListener(this);
+	    };
+	  }
+
+	  createFoodButtonListener(myPage) {
+	    $('#createButton').on('click', function () {
+	      $('#newFoodForm').show();
+	      myPage.createFoodFormListener(myPage);
+	    });
+	  }
+
+	  createFoodFormListener(myPage) {
+	    $('#createFoodForm').on('submit', function (event) {
+	      event.preventDefault();
+
+	      let food = $(event.currentTarget.name).val();
+	      let calories = $(event.currentTarget.calories).val();
+
+	      myPage.errorCheck(food, calories);
+
+	      let data = $.post(herokuUrl() + `api/v1/foods?name=${food}&calories=${calories}"`).then(function (data) {
+	        let button = `<td><button type='button' class='deleteButton' id='${data.id}'>Delete</button></td>`;
+	        let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
+	        $(".foodsTable").prepend(toInsert);
+	        $('#createFoodForm')[0].reset();
+	      });
+	    });
+	  }
+
+	  editFoodListener(myPage) {
+	    $('.foodsTable').on('keydown', '.food', function (event) {
+	      const foodRow = $(this).parent();
+	      const foodId = foodRow.attr("id");
+	      const attrName = $(this).attr("name");
+	      const data = { [attrName]: $(this).text() };
+
+	      if (event.keyCode === 13) {
+	        myPage.ajaxPatchRequest(data, foodId);
+	        return false;
+	      }
+	    });
+	  }
+
+	  ajaxPatchRequest(data, foodId) {
+	    $.ajax({
+	      type: 'PATCH',
+	      url: `${herokuUrl()}api/v1/foods/${foodId}`,
+	      data: data,
+	      success: function () {
+	        alert("Successful");
+	      },
+	      error: function () {
+	        alert("Nope");
+	      }
+	    });
+	  }
+
+	  deleteFoodListener() {
+	    $('.deleteButton').on('click', function () {
+	      $.ajax({
+	        type: 'DELETE',
+	        url: herokuUrl() + `api/v1/foods/${event.target.id}`,
+	        success: $(`#${event.target.id}`).hide()
+	      });
+	    });
+	  }
+
+	  errorCheck(food, calories) {
+	    //let words = [food, calories]
+	    //let toSay = {
+	    //food: "food name",
+	    //calories: "calorie amount"
+	    //}
+
+	    //words.forEach(function(input, index) {
+	    //let word = ["food", "calories"]
+	    //if (!`${input}`) {
+	    //$(`${word[index]}-error`).remove()
+	    //throw new Error ($(`#${word[index]}Field`).append(`<p id=``${word[index]}-error``>Please enter a ${toSay[word[index]]} </p>`))
+	    //}
+	    //})
+
+	    if (!food) {
+	      $('#name-error').remove();
+	      throw new Error($('#nameField').append("<p id='name-error'>Please enter a food name</p>"));
+	    } else if (!calories || calories < 1) {
+	      $('#calorie-error').remove();
+	      throw new Error($('#calorieField').append("<p id='calorie-error'>Please enter a calorie amount</p>"));
+	    }
+	  }
+	}
+
+	module.exports = CruddyFood;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	const $ = __webpack_require__(2);
+
+	class HtmlEvents {
+
+	  fillTable(foods) {
+	    foods.reverse().forEach(function (foodType) {
+	      event.preventDefault;
+	      let button = `<td><button type='button' class='deleteButton' id='${foodType.id}'>Delete</button></td>`;
+	      let insertName = `<tr id=${foodType.id}><td class="foods" name="name" contentEditable>${foodType.name}</td>`;
+	      let insertCals = `<td class="foods" name="calories" contentEditable>${foodType.calories}`;
+	      let insertRow = `${insertName}${insertCals}</td>${button}</tr>`;
+	      $(".foodsTable").append(insertRow);
+	    });
+	  }
+	}
+
+	module.exports = HtmlEvents;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	const $ = __webpack_require__(2);
+	const herokuUrl = __webpack_require__(1);
+	const HtmlEvents = __webpack_require__(6);
+
+	class Filter {
+	  constructor() {
+	    this.html = new HtmlEvents();
+	  }
+
+	  startListener(model, thisFilter) {
+	    $(`.${model}-filter`).on('keydown', function (event) {
+	      let searchValue = $('.search-value').val().toLowerCase();
+	      $.ajax({
+	        type: 'GET',
+	        url: `${herokuUrl()}api/v1/${model}`,
+	        success: function (posts) {
+	          thisFilter.appendTable(posts, searchValue, model);
+	        }
+	      });
+	    });
+	  }
+
+	  appendTable(array, searchValue, model) {
+	    let Objects = array.filter(function (obj) {
+	      return obj.name.toLowerCase().includes(searchValue);
+	    });
+
+	    $(`.${model}`).remove();
+	    $('.deleteButton').hide();
+
+	    let html = new HtmlEvents();
+	    html.fillTable(Objects);
+	  }
+	}
+
+	module.exports = Filter;
 
 /***/ })
 /******/ ]);
