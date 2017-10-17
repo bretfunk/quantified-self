@@ -232,6 +232,7 @@
 	        alert("Nope");
 	      }
 	    });
+
 	  }
 
 	  deleteFoodListener() {
@@ -284,6 +285,7 @@
 
 /***/ }),
 /* 5 */
+
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10673,7 +10675,6 @@
 	      });
 	    });
 	  }
-
 	  static calorieFilter(model, loader) {
 	    $('.calorieButton').on('click', function (event) {
 	      let counter = $(this).attr("id");
@@ -10734,5 +10735,3 @@
 
 	module.exports = Meal;
 
-/***/ })
-/******/ ]);
