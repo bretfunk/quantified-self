@@ -60,8 +60,7 @@
 	class Food {
 
 	  static loadPage(modelString) {
-	    let loader = new DefaultLoader();
-	    loader.getJSON(modelString);
+	    DefaultLoader.getJSON(modelString);
 	  }
 	}
 
@@ -96,8 +95,8 @@
 	    };
 	  }
 
-	  getJSON(modelString) {
-	    let mySelf = this;
+	  static getJSON(modelString) {
+	    let mySelf = new DefaultLoader();
 	    $(`#new${modelString}Form`).hide();
 	    $.ajax({
 	      type: "GET",
@@ -147,6 +146,8 @@
 	    crud.deleteMealFoodListener();
 	    let me = new DefaultLoader();
 	    me.foodsForShow("foods");
+	    $('.displayFoods').hide();
+	    $('.addToMeal').hide();
 	    Filter.calorieFilter("foods", me);
 	  }
 	}
@@ -158,8 +159,8 @@
 /***/ (function(module, exports) {
 
 	module.exports = function () {
-	  // return "https://arcane-depths-57821.herokuapp.com/";
-	  return "http://localhost:3000/";
+	  return "https://arcane-depths-57821.herokuapp.com/"; // Rails Backend
+	  // return "http://localhost:3000/" // Running Rails app at port:3000
 	};
 
 /***/ }),
@@ -169,6 +170,7 @@
 	const $ = __webpack_require__(5);
 	const herokuUrl = __webpack_require__(3);
 	const DefaultLoader = __webpack_require__(2);
+	const HtmlEvents = __webpack_require__(6);
 
 	class CruddyFood {
 	  constructor() {
@@ -176,6 +178,7 @@
 	      this.deleteFoodListener();
 	      this.editFoodListener();
 	      this.createFoodButtonListener();
+	      this.createMealButtonListener();
 	    };
 	  }
 
@@ -186,8 +189,37 @@
 	    });
 	  }
 
+	  createMealButtonListener() {
+	    let meals = ["Breakfast", "Lunch", "Dinner", "Snack"];
+	    meals.forEach(meal => {
+	      $(`.new${meal}`).on('click', function () {
+	        $('.displayFoods').show();
+	        $('.addToMeal').show();
+	        $(`.new${meal}`).css({ 'background-color': "yellow" });
+	        let mealId = $(this).attr("id");
+	        CruddyFood.getFoodsToAdd(mealId);
+	      });
+	    });
+	  }
+
+	  static getFoodsToAdd(mealId) {
+	    $('input:checkbox').change(function () {
+	      if ($(this).is(':checked')) {
+	        let foodId = $(this).parent().parent().attr("id");
+	        CruddyFood.addFoodToMeal(mealId, foodId);
+	      }
+	    });
+	  }
+
+	  static addFoodToMeal(mealId, foodId) {
+	    $.post(herokuUrl() + `api/v1/meals/${mealId}/foods/${foodId}`).then(data => {
+	      DefaultLoader.getJSON("meals");
+	    });
+	  }
+
 	  static createFoodFormListener() {
 	    $('#createFoodForm').on('submit', function (event) {
+	      event.preventDefault();
 
 	      let food = $(event.currentTarget.name).val();
 	      let calories = $(event.currentTarget.calories).val();
@@ -198,7 +230,7 @@
 	        let button = `<td><button type='button' class='deleteButton' id='${data.id}'>Delete</button></td>`;
 	        let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
 	        $(".foodsTable").prepend(toInsert);
-	        $('#createFoodForm')[0].reset();
+	        $('#createFoodForm').hide();
 	      });
 	    });
 	  }
@@ -232,11 +264,10 @@
 	        alert("Nope");
 	      }
 	    });
-
 	  }
 
 	  deleteFoodListener() {
-	    $('.deleteButton').on('click', function () {
+	    $('.foodsDeleteButton').on('click', function () {
 	      $.ajax({
 	        type: 'DELETE',
 	        url: herokuUrl() + `api/v1/foods/${event.target.id}`,
@@ -246,7 +277,7 @@
 	  }
 
 	  deleteMealFoodListener() {
-	    $('.deleteButton').on('click', function () {
+	    $('.mealsDeleteButton').on('click', function () {
 	      let mealId = event.target.parentElement.parentElement.parentElement.id;
 	      $.ajax({
 	        type: 'DELETE',
@@ -274,9 +305,11 @@
 	    if (!food) {
 	      $('#name-error').remove();
 	      throw new Error($('#nameField').append("<p id='name-error'>Please enter a food name</p>"));
+	      done();
 	    } else if (!calories || calories < 1) {
 	      $('#calorie-error').remove();
 	      throw new Error($('#calorieField').append("<p id='calorie-error'>Please enter a calorie amount</p>"));
+	      done();
 	    }
 	  }
 	}
@@ -285,7 +318,6 @@
 
 /***/ }),
 /* 5 */
-
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10559,7 +10591,7 @@
 	  static fillTable(foods, modelName) {
 	    foods.reverse().forEach(function (foodType) {
 	      // event.preventDefault
-	      let button = `<td><button type='button' class='deleteButton' id='${foodType.id}'>Delete</button></td>`;
+	      let button = `<td><button type='button' class='${modelName}DeleteButton' id='${foodType.id}'>Delete</button></td>`;
 	      let insertName = `<tr id=${foodType.id}><td class="${modelName}" name="name" contentEditable>${foodType.name}</td>`;
 	      let insertCals = `<td class="${modelName}" name="calories" contentEditable>${foodType.calories}</td>`;
 	      let insertRow = `${insertName}${insertCals}${button}</tr>`;
@@ -10606,7 +10638,7 @@
 	    let caloriesConsumed = mathHelper.sum(used);
 	    let remainingCalories = goalCalories - caloriesConsumed;
 	    $('.totals').append(`<tr><td>Goal Calories</td><td>${goalCalories}</td></tr>`);
-	    $('.totals').append(`<tr><td>Calories Consumed</td><td>${caloriesConsumed}</td></tr>`);
+	    $('.totals').append(`<tr><td>Calories Consumed</td><td class="caloriesConsumed">${caloriesConsumed}</td></tr>`);
 	    $('.totals').append(`<tr><td>Remaining Calories</td><td style="color:${mathHelper.calorieColor(remainingCalories)}">${remainingCalories}</td></tr>`);
 	  }
 	}
@@ -10647,15 +10679,15 @@
 	class Filter {
 	  constructor() {
 	    this.html = new HtmlEvents(), this.calFilter = {
-	      "0": function (Obj, modelName) {
+	      0: function (Obj, modelName) {
 	        HtmlEvents.fillDisplayTable(Obj.reverse(), modelName);
 	        $('.calorieButton').attr('id', '1');
 	      },
-	      "1": function (Obj, modelName) {
+	      1: function (Obj, modelName) {
 	        HtmlEvents.fillDisplayTable(Obj, modelName);
 	        $('.calorieButton').attr('id', '2');
 	      },
-	      "2": function (Obj, modelName, loader) {
+	      2: function (Obj, modelName, loader) {
 	        event.preventDefault();
 	        loader.foodsForShow(modelName);
 	        $('.calorieButton').attr('id', '0');
@@ -10675,6 +10707,7 @@
 	      });
 	    });
 	  }
+
 	  static calorieFilter(model, loader) {
 	    $('.calorieButton').on('click', function (event) {
 	      let counter = $(this).attr("id");
@@ -10693,7 +10726,7 @@
 	      return obj.name.toLowerCase().includes(searchValue);
 	    });
 
-	    $(`.${model}`).remove();
+	    $(`.${model}Table`).find("tr").remove();
 	    $('.deleteButton').hide();
 	    $(".checkmark").hide();
 
@@ -10706,7 +10739,7 @@
 	    });
 	    $(`.display${model}Table`).find("tr").remove();
 	    let filt = new Filter();
-	    filt.calFilter[`${counter}`](foods, model, loader);
+	    filt.calFilter[counter](foods, model, loader);
 	  }
 	}
 
@@ -10724,8 +10757,7 @@
 	class Meal {
 
 	  static loadPage(modelString) {
-	    let loader = new DefaultLoader();
-	    loader.getJSON(modelString);
+	    DefaultLoader.getJSON(modelString);
 	  }
 	}
 
@@ -10735,3 +10767,5 @@
 
 	module.exports = Meal;
 
+/***/ })
+/******/ ]);
