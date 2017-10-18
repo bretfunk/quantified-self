@@ -60,33 +60,55 @@
           </table>
         </td>
       </tr>
-      <tr>
-        <td><h2>Foods</h2>
-          <a href="foods.html">
-              <button type="button">Create New Food</button>
-              <button type="button" id="1">Breakfast</button>
-          </a>
-        </td>
+      </tr>
         <td><h2>Total</h2>
           <table class="darkBackground totals" style="width:50%">
 
           </table>
         </td>
+    <table style="width:30%">
       </tr>
-      <tr><h1>Foods</h1>
-      <table style="width:30%">
         <tr>
-          <th>Food Name</th>
-          <th>
-            <td>
-              <button type='button' class='calorieButton' id="0">Calories
-              </button>
-            </td>
-          </th>
+          <td><h2>Foods</h2>
+            <a href="foods.html">
+                <button type="button">Create New Food</button>
+            </a>
+          </td>
         </tr>
-        <tbody style="width:30%" class="displayfoodsTable" id="displayfoodsTable">
-        </tbody>
-      </tr>
+        <tr>
+          <td>
+            <button type="button" id="1" class="newBreakfast">Breakfast</button></td>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button" id="2" class="Lunch">Lunch</button></td>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button" id="3" class="newDinner">Dinner</button></td>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button" id="4" class="newSnack">Snack</button></td>
+          </td>
+        <tr><h1>Foods</h1>
+        <table style="width:30%" class="displayFoods">
+          <tr>
+            <th>Food Name</th>
+            <th>
+              <td>
+                <button type='button' class='calorieButton' id="0">Calories
+                </button>
+              </td>
+            </th>
+          </tr>
+          <tbody style="width:30%" class="displayfoodsTable" id="displayfoodsTable">
+          </tbody>
+        </tr>
+      </table>
     </table>
     <script src="main.bundle.js"></script>
   </body>
