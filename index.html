@@ -14,7 +14,7 @@
       <tr>
         <td>
           <h2>Breakfast</h2>
-          <table style="width:50%">
+          <table style="width:90%">
             <tr class="darkBackground">
               <th>Name</th>
               <th>Calories</th>
@@ -26,7 +26,7 @@
 
         <td>
           <h2>Lunch</h2>
-          <table style="width:50%">
+          <table style="width:90%">
             <tr class="darkBackground">
               <th>Name</th>
               <th>Calories</th>
@@ -39,7 +39,7 @@
       <tr>
         <td>
           <h2>Dinner</h2>
-          <table style="width:50%">
+          <table style="width:90%">
             <tr class="darkBackground">
               <th>Name</th>
               <th>Calories</th>
@@ -50,7 +50,7 @@
         </td>
         <td>
           <h2>Snack</h2>
-          <table style="width:50%">
+          <table style="width:90%">
             <tr class="darkBackground">
               <th>Name</th>
               <th>Calories</th>
@@ -62,17 +62,18 @@
       </tr>
       </tr>
         <td><h2>Total</h2>
-          <table class="darkBackground totals" style="width:50%">
+          <table class="darkBackground totals" style="width:70%">
 
           </table>
         </td>
     <table style="width:30%">
-      </tr>
+      <tr>
         <tr>
-          <td><h2>Foods</h2>
-            <a href="foods.html">
-                <button type="button">Create New Food</button>
-            </a>
+          <td>
+            <h2>Foods</h2>
+              <a href="foods.html">
+                  <button type="button">Create New Food</button>
+              </a>
           </td>
         </tr>
         <tr>
@@ -82,7 +83,7 @@
         </tr>
         <tr>
           <td>
-            <button type="button" id="2" class="Lunch">Lunch</button></td>
+            <button type="button" id="2" class="newLunch">Lunch</button></td>
           </td>
         </tr>
         <tr>
@@ -94,21 +95,24 @@
           <td>
             <button type="button" id="4" class="newSnack">Snack</button></td>
           </td>
-        <tr><h1>Foods</h1>
-        <table style="width:30%" class="displayFoods">
-          <tr>
-            <th>Food Name</th>
-            <th>
-              <td>
-                <button type='button' class='calorieButton' id="0">Calories
-                </button>
-              </td>
-            </th>
-          </tr>
-          <tbody style="width:30%" class="displayfoodsTable" id="displayfoodsTable">
-          </tbody>
+        <tr>
+          <form>
+            <table style="width:30%" class="displayFoods">
+              <tr>
+                <th>Food Name</th>
+                <th>
+                  <td>
+                    <button type='button' class='calorieButton' id="0">Calories
+                    </button>
+                  </td>
+                </th>
+              </tr>
+              <tbody style="width:30%" class="displayfoodsTable" id="displayfoodsTable">
+              </tbody>
+            </table>
+            <input type="submit" value="Submit">
+          </form>
         </tr>
-      </table>
     </table>
     <script src="main.bundle.js"></script>
   </body>
