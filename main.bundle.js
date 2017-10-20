@@ -146,7 +146,6 @@
 	    crud.deleteMealFoodListener();
 	    let me = new DefaultLoader();
 	    me.foodsForShow("foods");
-	    $('.displayFoods').hide();
 	    $('.addToMeal').hide();
 	    Filter.calorieFilter("foods", me);
 	  }
@@ -160,7 +159,8 @@
 
 	module.exports = function () {
 	  return "https://arcane-depths-57821.herokuapp.com/"; // Rails Backend
-	  // return "http://localhost:3000/" // Running Rails app at port:3000
+	  //return "http://localhost:3000/" // Running Rails app at port:3000
+	  //return "https://node-api-backend.herokuapp.com/" //node backend on heroku
 	};
 
 /***/ }),
@@ -227,7 +227,7 @@
 	      CruddyFood.errorCheck(food, calories);
 
 	      let data = $.post(herokuUrl() + `api/v1/foods?name=${food}&calories=${calories}"`).then(function (data) {
-	        let button = `<td><button type='button' class='deleteButton' id='${data.id}'>Delete</button></td>`;
+	        let button = `<td><img src="../assets/delete.png" style="width:15px" class='deleteButton' id='${data.id}'></td>`;
 	        let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
 	        $(".foodsTable").prepend(toInsert);
 	        $('#createFoodForm').hide();
@@ -248,6 +248,7 @@
 	          CruddyFood.ajaxPatchRequest(data, foodId);
 	          return false;
 	        }
+	        deleteFoodListener();
 	      });
 	    });
 	  }
@@ -277,38 +278,27 @@
 	  }
 
 	  deleteMealFoodListener() {
-	    $('.mealsDeleteButton').on('click', function () {
-	      let mealId = event.target.parentElement.parentElement.parentElement.id;
-	      $.ajax({
-	        type: 'DELETE',
-	        url: herokuUrl() + `api/v1/meals/${mealId}/foods/${event.target.id}`,
-	        success: $(`#${event.target.id}`).hide()
+	    let meals = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+	    meals.forEach(function (meal) {
+	      $(`.${meal}DeleteButton`).on('click', function () {
+	        let mealId = event.target.parentElement.parentElement.parentElement.id;
+	        $.ajax({
+	          type: 'DELETE',
+	          url: herokuUrl() + `api/v1/meals/${mealId}/foods/${event.target.id}`,
+	          success: $(`#${event.target.id}`).hide()
+	        });
 	      });
 	    });
 	  }
 
 	  static errorCheck(food, calories) {
-	    //let words = [food, calories]
-	    //let toSay = {
-	    //food: "food name",
-	    //calories: "calorie amount"
-	    //}
-
-	    //words.forEach(function(input, index) {
-	    //let word = ["food", "calories"]
-	    //if (!`${input}`) {
-	    //$(`${word[index]}-error`).remove()
-	    //throw new Error ($(`#${word[index]}Field`).append(`<p id=``${word[index]}-error``>Please enter a ${toSay[word[index]]} </p>`))
-	    //}
-	    //})
-
 	    if (!food) {
 	      $('#name-error').remove();
-	      throw new Error($('#nameField').append("<p id='name-error'>Please enter a food name</p>"));
+	      throw new Error($('#nameField').append("<p id='name-error' style='color:red;'>Please enter a food name</p>"));
 	      done();
 	    } else if (!calories || calories < 1) {
 	      $('#calorie-error').remove();
-	      throw new Error($('#calorieField').append("<p id='calorie-error'>Please enter a calorie amount</p>"));
+	      throw new Error($('#calorieField').append("<p id='calorie-error' style='color:red;'>Please enter a calorie amount</p>"));
 	      done();
 	    }
 	  }
@@ -10591,7 +10581,7 @@
 	  static fillTable(foods, modelName) {
 	    foods.reverse().forEach(function (foodType) {
 	      // event.preventDefault
-	      let button = `<td><button type='button' class='${modelName}DeleteButton' id='${foodType.id}'>Delete</button></td>`;
+	      let button = `<td><img src="../assets/delete.png" style="width:15px" class='${modelName}DeleteButton' id='${foodType.id}'></td>`;
 	      let insertName = `<tr id=${foodType.id}><td class="${modelName}" name="name" contentEditable>${foodType.name}</td>`;
 	      let insertCals = `<td class="${modelName}" name="calories" contentEditable>${foodType.calories}</td>`;
 	      let insertRow = `${insertName}${insertCals}${button}</tr>`;
@@ -10696,7 +10686,7 @@
 	  }
 
 	  static startListener(model) {
-	    $(`.${model}-filter`).on('keydown', function (event) {
+	    $(`.${model}-filter`).on('keyup', function (event) {
 	      let searchValue = $('.search-value').val().toLowerCase();
 	      $.ajax({
 	        type: 'GET',

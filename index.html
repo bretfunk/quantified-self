@@ -6,10 +6,36 @@
   </head>
   <body>
     <style>
+button {
+  border: 2px solid;
+  border-radius: 25px;
+  background-color: DeepSkyBlue;
+}
+
 .darkBackground {
   background-color: lightgrey
 }
+
+.links {
+  text-align: center;
+}
+
+a:link, a:visited {
+  background-color: DeepSkyBlue;
+  color: black;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border: 2px solid;
+  border-radius: 25px;
+}
+
+a:hover, a:active {
+  background-color: red;
+}
     </style>
+    <h1>Meals</h1>
     <table style="width:100%">
       <tr>
         <td>
@@ -71,49 +97,47 @@
         <tr>
           <td>
             <h2>Foods</h2>
-              <a href="foods.html">
-                  <button type="button">Create New Food</button>
+            <a href="foods.html"><b>Create New Food</b></a>
               </a>
           </td>
         </tr>
+        <td>
+          Choose The Meal To Add To:
+        </td>
         <tr>
           <td>
-            <button type="button" id="1" class="newBreakfast">Breakfast</button></td>
+            <button type="button" id="1" class="newBreakfast"><b>Breakfast</b></button></td>
+          </td>
+          <td>
+            <button type="button" id="2" class="newLunch"><b>Lunch</b></button></td>
           </td>
         </tr>
         <tr>
           <td>
-            <button type="button" id="2" class="newLunch">Lunch</button></td>
+            <button type="button" id="3" class="newDinner"><b>Dinner</b></button></td>
           </td>
-        </tr>
-        <tr>
           <td>
-            <button type="button" id="3" class="newDinner">Dinner</button></td>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <button type="button" id="4" class="newSnack">Snack</button></td>
+            <button type="button" id="4" class="newSnack"><b>Snack</b></button></td>
           </td>
         <tr>
           <form>
             <table style="width:30%" class="displayFoods">
               <tr>
                 <th>Food Name</th>
-                <th>
-                  <td>
-                    <button type='button' class='calorieButton' id="0">Calories
-                    </button>
+                <th class="calorieButton" id="0">Calories</th>
                   </td>
                 </th>
               </tr>
               <tbody style="width:30%" class="displayfoodsTable" id="displayfoodsTable">
               </tbody>
             </table>
-            <input type="submit" class="addToMeal" value="Add to Meal">
+            <button type="submit" class="addToMeal" value="Add to Meal">Add to Selected Meal</button>
           </form>
         </tr>
     </table>
+    <div class="links">
+      <h3><a href="/foods.html">Go To Foods</a></h3>
+    </div>
     <script src="main.bundle.js"></script>
   </body>
 </html>
