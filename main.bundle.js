@@ -227,7 +227,7 @@
 	      CruddyFood.errorCheck(food, calories);
 
 	      let data = $.post(herokuUrl() + `api/v1/foods?name=${food}&calories=${calories}"`).then(function (data) {
-	        let button = `<td><img src="../assets/delete.png" style="width:15px" class='deleteButton' id='${data.id}'></td>`;
+	        let button = `<td><button class='foodsDeleteButton deleteButton' id='${data.id}'>Delete</button></td>`;
 	        let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
 	        $(".foodsTable").prepend(toInsert);
 	        $('#createFoodForm').hide();
