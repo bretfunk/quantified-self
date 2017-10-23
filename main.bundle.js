@@ -45,7 +45,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	const food = __webpack_require__(1);
-	const meal = __webpack_require__(9);
+	const meal = __webpack_require__(10);
 
 /***/ }),
 /* 1 */
@@ -76,8 +76,8 @@
 
 	const herokuUrl = __webpack_require__(3);
 	const CruddyFood = __webpack_require__(4);
-	const HtmlEvents = __webpack_require__(6);
-	const Filter = __webpack_require__(8);
+	const HtmlEvents = __webpack_require__(7);
+	const Filter = __webpack_require__(9);
 	const $ = __webpack_require__(5);
 
 	class DefaultLoader {
@@ -159,7 +159,7 @@
 
 	module.exports = function () {
 	  return "https://arcane-depths-57821.herokuapp.com/"; // Rails Backend
-	  //return "http://localhost:3000/" // Running Rails app at port:3000
+	  //  return "http://localhost:3000/" // Running Rails app at port:3000
 	  //return "https://node-api-backend.herokuapp.com/" //node backend on heroku
 	};
 
@@ -169,8 +169,9 @@
 
 	const $ = __webpack_require__(5);
 	const herokuUrl = __webpack_require__(3);
-	const DefaultLoader = __webpack_require__(2);
-	const HtmlEvents = __webpack_require__(6);
+	const TableReloader = __webpack_require__(6);
+	// const Meal = require("./meals")
+	const HtmlEvents = __webpack_require__(7);
 
 	class CruddyFood {
 	  constructor() {
@@ -213,7 +214,7 @@
 
 	  static addFoodToMeal(mealId, foodId) {
 	    $.post(herokuUrl() + `api/v1/meals/${mealId}/foods/${foodId}`).then(data => {
-	      DefaultLoader.getJSON("meals");
+	      TableReloader.reload("meals");
 	    });
 	  }
 
@@ -248,7 +249,6 @@
 	          CruddyFood.ajaxPatchRequest(data, foodId);
 	          return false;
 	        }
-	        deleteFoodListener();
 	      });
 	    });
 	  }
@@ -272,7 +272,7 @@
 	      $.ajax({
 	        type: 'DELETE',
 	        url: herokuUrl() + `api/v1/foods/${event.target.id}`,
-	        success: $(`#${event.target.id}`).hide()
+	        success: $(".foodsTable").find(`#${event.target.id}`).hide()
 	      });
 	    });
 	  }
@@ -285,7 +285,7 @@
 	        $.ajax({
 	          type: 'DELETE',
 	          url: herokuUrl() + `api/v1/meals/${mealId}/foods/${event.target.id}`,
-	          success: $(`#${event.target.id}`).hide()
+	          success: $(`.${meal}Table`).find(`#${event.target.id}`).hide()
 	        });
 	      });
 	    });
@@ -10570,7 +10570,31 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	const $ = __webpack_require__(5);
-	const mathHelper = __webpack_require__(7);
+	const DefaultLoader = __webpack_require__(2);
+
+	class pageReloader {
+	  static reload(model) {
+	    let loader = new DefaultLoader();
+	    $(`#new${modelString}Form`).hide();
+	    $.ajax({
+	      type: "GET",
+	      url: `${herokuUrl()}api/v1/${modelString}`,
+	      success: function (data) {
+	        debugger;
+	        // loader.launchPage(data, modelString)
+	      }
+	    });
+	  }
+	}
+
+	module.exports = pageReloader;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	const $ = __webpack_require__(5);
+	const mathHelper = __webpack_require__(8);
 
 	class HtmlEvents {
 
@@ -10581,7 +10605,7 @@
 	  static fillTable(foods, modelName) {
 	    foods.reverse().forEach(function (foodType) {
 	      // event.preventDefault
-	      let button = `<td><button class='${modelName}DeleteButton deleteButton' id='${foodType.id}'>Delete</button></td>`;
+	      let button = `<td><button class='${modelName}DeleteButton deleteButton' id='${foodType.id}'>X</button></td>`;
 	      let insertName = `<tr id=${foodType.id}><td class="${modelName}" name="name" contentEditable>${foodType.name}</td>`;
 	      let insertCals = `<td class="${modelName}" name="calories" contentEditable>${foodType.calories}</td>`;
 	      let insertRow = `${insertName}${insertCals}${button}</tr>`;
@@ -10605,6 +10629,7 @@
 	      HtmlEvents.fillTable(meal.foods, meal.name);
 	      HtmlEvents.setTotal(meal, totals);
 	      $(`.${meal.name}Table`).attr('id', `${meal.id}`);
+	      $(`.new${meal.name}`).attr('id', `${meal.id}`);
 	    });
 	  }
 
@@ -10636,7 +10661,7 @@
 	module.exports = HtmlEvents;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 	class mathHelper {
@@ -10658,13 +10683,14 @@
 	module.exports = mathHelper;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	const $ = __webpack_require__(5);
 	const herokuUrl = __webpack_require__(3);
-	const HtmlEvents = __webpack_require__(6);
+	const HtmlEvents = __webpack_require__(7);
 	const DefaultLoader = __webpack_require__(2);
+	const CruddyFood = __webpack_require__(4);
 
 	class Filter {
 	  constructor() {
@@ -10721,6 +10747,8 @@
 	    $(".checkmark").hide();
 
 	    HtmlEvents.fillTable(Objects, model);
+	    let crudFood = new CruddyFood();
+	    crudFood.startListener();
 	  }
 
 	  static sortCalories(data, model, counter, loader) {
@@ -10736,7 +10764,7 @@
 	module.exports = Filter;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// This is the base url, last character is a "/" so don't include as first character
