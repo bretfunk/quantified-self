@@ -249,7 +249,6 @@
 	          CruddyFood.ajaxPatchRequest(data, foodId);
 	          return false;
 	        }
-	        deleteFoodListener();
 	      });
 	    });
 	  }
@@ -10606,7 +10605,7 @@
 	  static fillTable(foods, modelName) {
 	    foods.reverse().forEach(function (foodType) {
 	      // event.preventDefault
-	      let button = `<td><button class='${modelName}DeleteButton deleteButton' id='${foodType.id}'>Delete</button></td>`;
+	      let button = `<td><button class='${modelName}DeleteButton deleteButton' id='${foodType.id}'>X</button></td>`;
 	      let insertName = `<tr id=${foodType.id}><td class="${modelName}" name="name" contentEditable>${foodType.name}</td>`;
 	      let insertCals = `<td class="${modelName}" name="calories" contentEditable>${foodType.calories}</td>`;
 	      let insertRow = `${insertName}${insertCals}${button}</tr>`;
@@ -10691,6 +10690,7 @@
 	const herokuUrl = __webpack_require__(3);
 	const HtmlEvents = __webpack_require__(7);
 	const DefaultLoader = __webpack_require__(2);
+	const CruddyFood = __webpack_require__(4);
 
 	class Filter {
 	  constructor() {
@@ -10747,6 +10747,8 @@
 	    $(".checkmark").hide();
 
 	    HtmlEvents.fillTable(Objects, model);
+	    let crudFood = new CruddyFood();
+	    crudFood.startListener();
 	  }
 
 	  static sortCalories(data, model, counter, loader) {
