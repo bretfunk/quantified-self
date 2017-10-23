@@ -158,8 +158,8 @@
 /***/ (function(module, exports) {
 
 	module.exports = function () {
-	  return "https://arcane-depths-57821.herokuapp.com/"; // Rails Backend
-	  //return "http://localhost:3000/" // Running Rails app at port:3000
+	  //return "https://arcane-depths-57821.herokuapp.com/" // Rails Backend
+	  return "http://localhost:3000/"; // Running Rails app at port:3000
 	  //return "https://node-api-backend.herokuapp.com/" //node backend on heroku
 	};
 
@@ -10581,7 +10581,7 @@
 	  static fillTable(foods, modelName) {
 	    foods.reverse().forEach(function (foodType) {
 	      // event.preventDefault
-	      let button = `<td><button class='${modelName}DeleteButton' id='${foodType.id}'></button></td>`;
+	      let button = `<td><button class='${modelName}DeleteButton deleteButton' id='${foodType.id}'>Delete</button></td>`;
 	      let insertName = `<tr id=${foodType.id}><td class="${modelName}" name="name" contentEditable>${foodType.name}</td>`;
 	      let insertCals = `<td class="${modelName}" name="calories" contentEditable>${foodType.calories}</td>`;
 	      let insertRow = `${insertName}${insertCals}${button}</tr>`;
