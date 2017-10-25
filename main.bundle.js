@@ -158,8 +158,8 @@
 /***/ (function(module, exports) {
 
 	module.exports = function () {
-	  return "https://arcane-depths-57821.herokuapp.com/"; // Rails Backend
-	  //  return "http://localhost:3000/" // Running Rails app at port:3000
+	  // return "https://arcane-depths-57821.herokuapp.com/" // Rails Backend
+	  return "http://localhost:3000/"; // Running Rails app at port:3000
 	  //return "https://node-api-backend.herokuapp.com/" //node backend on heroku
 	};
 
@@ -228,7 +228,7 @@
 	      CruddyFood.errorCheck(food, calories);
 
 	      let data = $.post(herokuUrl() + `api/v1/foods?name=${food}&calories=${calories}"`).then(function (data) {
-	        let button = `<td><button class='foodsDeleteButton deleteButton' id='${data.id}'>Delete</button></td>`;
+	        let button = `<td><button class='foodsDeleteButton deleteButton' id='${data.id}'>X</button></td>`;
 	        let toInsert = `<tr id=${data.id}><td>${food}</td><td>${calories}</td>${button}</tr>`;
 	        $(".foodsTable").prepend(toInsert);
 	        $('#createFoodForm').hide();
@@ -244,22 +244,22 @@
 	        const foodId = foodRow.attr("id");
 	        const attrName = $(this).attr("name");
 	        const data = { [attrName]: $(this).text() };
-
+	        const mealId = this.parentElement.parentElement.id;
 	        if (event.keyCode === 13) {
-	          CruddyFood.ajaxPatchRequest(data, foodId);
+	          CruddyFood.ajaxPatchRequest(data, foodId, tableName, mealId);
 	          return false;
 	        }
 	      });
 	    });
 	  }
 
-	  static ajaxPatchRequest(data, foodId) {
+	  static ajaxPatchRequest(data, foodId, tableName, mealId) {
 	    $.ajax({
 	      type: 'PATCH',
 	      url: `${herokuUrl()}api/v1/foods/${foodId}`,
 	      data: data,
 	      success: function () {
-	        alert("Successful");
+	        TableReloader.reload("meals");
 	      },
 	      error: function () {
 	        alert("Nope");
@@ -285,7 +285,9 @@
 	        $.ajax({
 	          type: 'DELETE',
 	          url: herokuUrl() + `api/v1/meals/${mealId}/foods/${event.target.id}`,
-	          success: $(`.${meal}Table`).find(`#${event.target.id}`).hide()
+	          success: function () {
+	            TableReloader.reload("meals");
+	          }
 	        });
 	      });
 	    });
@@ -10571,23 +10573,48 @@
 
 	const $ = __webpack_require__(5);
 	const DefaultLoader = __webpack_require__(2);
+	const herokuUrl = __webpack_require__(3);
+	const CruddyFood = __webpack_require__(4);
+	const HtmlEvents = __webpack_require__(7);
 
-	class pageReloader {
+	class TableReloader {
 	  static reload(model) {
-	    let loader = new DefaultLoader();
-	    $(`#new${modelString}Form`).hide();
+	    $(`#new${model}Form`).hide();
 	    $.ajax({
 	      type: "GET",
-	      url: `${herokuUrl()}api/v1/${modelString}`,
+	      url: `${herokuUrl()}api/v1/${model}`,
 	      success: function (data) {
-	        debugger;
-	        // loader.launchPage(data, modelString)
+	        TableReloader.launchMealPage(data, model);
 	      }
 	    });
 	  }
+
+	  static launchMealPage(data, model) {
+	    let totals = {};
+	    let remainingCalories = {
+	      Breakfast: 400,
+	      Lunch: 600,
+	      Dinner: 800,
+	      Snack: 200
+	    };
+	    TableReloader.removeTables();
+	    HtmlEvents.setFoods(data, totals);
+	    HtmlEvents.displayTotals(totals, remainingCalories);
+	    HtmlEvents.getTotals(remainingCalories, totals);
+	    let crud = new CruddyFood();
+	    crud.startListener();
+	  }
+
+	  static removeTables() {
+	    let meals = ["Breakfast", "Lunch", "Dinner", "Snack"];
+	    meals.forEach(function (meal) {
+	      $(`.${meal}Table`).empty();
+	    });
+	    $(".totals").empty();
+	  }
 	}
 
-	module.exports = pageReloader;
+	module.exports = TableReloader;
 
 /***/ }),
 /* 7 */
