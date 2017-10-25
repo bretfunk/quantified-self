@@ -6,7 +6,7 @@ A food and calorie tracking up built using JQuery, JavaScript, Node and an Expre
 
 1. Clone this repository
 
-2. Change into the `quantified-self` directory
+2. CD into the `quantified-self` directory
 
 3. Run
 ```npm build```
@@ -25,8 +25,7 @@ https://bretfunk.github.io/quantified-self/
 
 
 #### Backend of the app can be found here
-https://arcane-depths-57821.herokuapp.com/ <--rails backend
-https://node-api-backend.herokuapp.com/ <--node backend (missing some functionality for meals due to seeding issues)
+https://node-api-backend.herokuapp.com/
 
 #### Backend app code can be found here
 https://github.com/bretfunk/quantified-self-api-node
